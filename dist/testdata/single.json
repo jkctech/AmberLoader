@@ -1,0 +1,33 @@
+[
+	{
+		"AlertId":"1234567",
+		"MessageId":"123456",
+		"Sender":"KindAlarmPortal",
+		"Sent":"1747557355",
+		"State":"Actual",
+		"Type":"Alert",
+		"Scope":"Public",
+		"AlertLevel":"10",
+		"Location":{
+			"Description":null,
+			"Latitude":null,
+			"Longitude":null
+		},
+		"Message":{
+			"Title":"Jan Jansen (14)",
+			"Description":"JAN JANSEN 1.53m. Blauw shirt, witte korte broek, rode schoenen.",
+			"DescriptionExt":"Vermist",
+			"Readmore_URL":"https://www.politie.nl/amberalert",
+			"Media_URL":null,
+			"Media":{
+				"Image":"/testdata/janjansen.jpg",
+				"SmallImage":"/testdata/janjansen.jpg"
+			}
+		},
+		"Area":{
+			"Description":null,
+			"Circle":null,
+			"CircleKM":null
+		}
+	}
+]

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="AmberLoader.css">
+	<script src="AmberLoader.js"></script>
+	<title>Example Webpage</title>
+</head>
+<body>
+	<h1>Example webpage</h1>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac ullamcorper velit. Mauris aliquam felis in lacinia pharetra. Donec dapibus sem erat, in fringilla ante tincidunt cursus. In sit amet erat et nunc mollis pharetra non consectetur lectus. Nulla pretium sollicitudin condimentum. Sed bibendum malesuada nulla, nec hendrerit sapien vulputate id. Nunc commodo eu nunc in volutpat. Ut posuere arcu feugiat, convallis libero et, aliquam ex.
+	</p>
+</body>
+</html>

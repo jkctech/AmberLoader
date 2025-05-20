@@ -1,0 +1,129 @@
+/*=============================== AmberLoader =================================
+  Author      : JKCTech
+  Version     : 1.1.0
+  Date        : 20-05-2025
+  Description : Automatic client-side Amber Alert notifier
+  Copyright   : Copyright © JKCTech
+  GitHub      : https://github.com/jkctech/AmberLoader
+=============================================================================*/
+
+:root {
+	--amber-alert-red: #e73e11;
+	--amber-alert-red-secondary: #e43b03;
+    --amber-alert-blue: #203999;
+}
+
+.amberloader-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 9999;
+	display: flex;
+	flex-direction: column;
+	color: #ffffff;
+	font-family: Arial, sans-serif;
+}
+
+.amberloader-collapsed {
+	background: var(--amber-alert-red-secondary);
+	text-align: center;
+	padding: 1rem;
+	cursor: pointer;
+	font-weight: bold;
+	font-size: 1rem;
+	width: 100%;
+}
+
+.amberloader-banner {
+	background: linear-gradient(50deg, var(--amber-alert-blue), var(--amber-alert-red));
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 1rem;
+	gap: 1rem;
+	width: 100%;
+}
+
+.amberloader-image {
+	height: 100px;
+	flex-shrink: 0;
+}
+
+.amberloader-textcontainer {
+	flex: 1;
+	padding-right: 3rem;
+}
+
+.amberloader-textcontainer div {
+	margin-bottom: 0.6rem;
+}
+
+.amberloader-description {
+	font-size: 1rem;
+}
+
+.amberloader-title {
+	font-weight: bold;
+	font-size: 1.4rem;
+}
+
+.amberloader-call {
+	font-weight: bold;
+	font-size: 1.1rem;
+}
+
+.amberloader-call a {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.amberloader-readmore {
+	box-shadow: inset 0px 1px 0px 0px #ffffff;
+	background: linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
+	background-color: #ffffff;
+	border-radius: 4px;
+	border: 1px solid #dcdcdc;
+	display: inline-block;
+	cursor: pointer;
+	color: #000;
+	font-family: inherit;
+	font-size: 1rem;
+	padding: 7px 10px;
+	text-decoration: none;
+}
+
+.amberloader-closebtn {
+	font-size: 18px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	margin-left: 10px;
+	color: #FFF;
+	position: absolute;
+	top: 15px;
+	right: 15px;
+}
+
+@media only screen and (max-width: 768px) {
+	.amberloader-banner {
+		flex-direction: column;
+	}
+
+	.amberloader-textcontainer div {
+		margin-bottom: 1rem;
+	}
+
+	.amberloader-image {
+		height: 150px;
+		margin: 1rem 0;
+	}
+
+	.amberloader-call {
+		font-size: 1.3rem;
+	}
+
+	.amberloader-readmore {
+		font-size: 1.2rem;
+	}
+}
