@@ -1,0 +1,33 @@
+[
+    {
+        "AlertId": "1234567",
+        "MessageId": "123456",
+        "Sender": "KindAlarmPortal",
+        "Sent": "1747557355",
+        "State": "Actual",
+        "Type": "Cancel",
+        "Scope": "Public",
+        "AlertLevel": "10",
+        "Location": {
+            "Description": null,
+            "Latitude": null,
+            "Longitude": null
+        },
+        "Message": {
+            "Title": null,
+            "Description": "De zoektocht naar Jan Jansen is be&#235;indigd. Dank voor uw inzet.",
+            "DescriptionExt": null,
+            "Readmore_URL": "https://www.politie.nl/amberalert",
+            "Media_URL": null,
+            "Media": {
+                "Image": null,
+                "SmallImage": null
+            }
+        },
+        "Area": {
+            "Description": null,
+            "Circle": null,
+            "CircleKM": null
+        }
+    }
+]

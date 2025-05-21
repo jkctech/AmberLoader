@@ -1,7 +1,7 @@
 /*=============================== AmberLoader =================================
   Author      : JKCTech
-  Version     : 1.1.0
-  Date        : 20-05-2025
+  Version     : 1.1.1
+  Date        : 21-05-2025
   Description : Automatic client-side Amber Alert notifier
   Copyright   : Copyright © JKCTech
   GitHub      : https://github.com/jkctech/AmberLoader
@@ -10,6 +10,7 @@
 (function () {
 	// Preferences
 	const API_URL = 'https://services.burgernetcdn.nl/landactiehost/api/v1/alerts';
+	const API_TESTURL = 'https://services.burgernet.nl/landactiehost/api/test/alerts';
 	const POLL_INTERVAL_SECONDS = 300;
 
 	// System vars
@@ -81,6 +82,7 @@
 		const collapsed = document.createElement('div');
 		collapsed.id = BANNER_CONTAINER_ID + "-collapsed";
 		collapsed.classList.add("amberloader-collapsed");
+		
 		collapsed.textContent = 'Amber Alert actief! (Klik om te openen)';
 
 		collapsed.onclick = () => {
@@ -111,35 +113,45 @@
 
 		const title = document.createElement('div');
 		title.classList.add("amberloader-title");
-		title.textContent = `AMBER ALERT: ${msg.Title}`;
+		textContainer.appendChild(title);
+
+		if (alert.Type == "Alert")
+		{
+			title.innerHTML = msg.Title ? `Amber Alert: ${msg.Title}` : "Amber Alert";
+		}
+		else if (alert.Type == "Cancel")
+		{
+			title.innerHTML = "Amber Alert be&#235;indigd";
+		}
 
 		const desc = document.createElement('div');
 		desc.classList.add("amberloader-description");
-		desc.textContent = msg.Description;
+		desc.innerHTML = msg.Description;
+		textContainer.appendChild(desc);
 
-		const call = document.createElement('div');
-		call.classList.add("amberloader-call");
-		call.innerHTML = "Tips? Bel de opsporingstiplijn: <a href='tel:08006070'>0800-6070</a>";
+		if (alert.Type == "Alert")
+		{
+			const call = document.createElement('div');
+			call.classList.add("amberloader-call");
+			call.innerHTML = "Tips? Bel de opsporingstiplijn: <a href='tel:08006070'>0800-6070</a>";
+			textContainer.appendChild(call);
+		}
 
 		const link = document.createElement('a');
 		link.classList.add("amberloader-readmore");
 		link.href = msg.Readmore_URL + "?utm_source=AmberLoader";
-		link.textContent = 'Meer Informatie 🡥';
+		link.textContent = 'Meer Informatie >';
 		link.target = '_blank';
+		textContainer.appendChild(link);
 
 		const closeBtn = document.createElement('button');
 		closeBtn.classList.add("amberloader-closebtn");
-		closeBtn.textContent = '✕ Sluiten';
+		closeBtn.textContent = '✕';
 
 		closeBtn.onclick = () => {
 			setCookie(COOKIE_COLLAPSED_KEY, 'true', 3600);
 			createCollapsedBanner();
 		};
-
-		textContainer.appendChild(title);
-		textContainer.appendChild(desc);
-		textContainer.appendChild(call);
-		textContainer.appendChild(link);
 
 		banner.appendChild(textContainer);
 		banner.appendChild(closeBtn);

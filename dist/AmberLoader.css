@@ -1,16 +1,16 @@
 /*=============================== AmberLoader =================================
-  Author      : JKCTech
-  Version     : 1.1.0
-  Date        : 20-05-2025
-  Description : Automatic client-side Amber Alert notifier
-  Copyright   : Copyright © JKCTech
-  GitHub      : https://github.com/jkctech/AmberLoader
+Author      : JKCTech
+Version     : 1.1.0
+Date        : 20-05-2025
+Description : Automatic client-side Amber Alert notifier
+Copyright   : Copyright © JKCTech
+GitHub      : https://github.com/jkctech/AmberLoader
 =============================================================================*/
 
 :root {
 	--amber-alert-red: #e73e11;
 	--amber-alert-red-secondary: #e43b03;
-    --amber-alert-blue: #203999;
+	--amber-alert-blue: #203999;
 }
 
 .amberloader-container {
