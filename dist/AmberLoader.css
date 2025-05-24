@@ -1,129 +1,70 @@
-/*=============================== AmberLoader =================================
-Author      : JKCTech
-Version     : 1.1.0
-Date        : 20-05-2025
-Description : Automatic client-side Amber Alert notifier
-Copyright   : Copyright © JKCTech
-GitHub      : https://github.com/jkctech/AmberLoader
-=============================================================================*/
-
-:root {
-	--amber-alert-red: #e73e11;
-	--amber-alert-red-secondary: #e43b03;
-	--amber-alert-blue: #203999;
-}
-
-.amberloader-container {
+/* Popup container */
+.AmberLoader-popup {
 	position: fixed;
 	top: 0;
 	left: 0;
-	width: 100%;
-	z-index: 9999;
+	width: 100vw;
+	height: 100vh;
+	background: #000;
+	z-index: 1000;
 	display: flex;
-	flex-direction: column;
-	color: #ffffff;
+	justify-content: center;
+	align-items: center;
+}
+
+/* Fullscreen image styles */
+.AmberLoader-imgLink, .AmberLoader-image {
+	width: 100%;
+	height: 100%;
+	display: block;
+	object-fit: contain;
+}
+
+/* Close button */
+.AmberLoader-closeBtn {
+	position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 4rem;
+    height: 4rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 3.5rem;
+    font-weight: bold;
+    line-height: 4rem;
+    text-align: center;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1010;
+    transition: background-color 0.2s ease;
+}
+
+.AmberLoader_closeBtn:hover {
+	background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Sticky top banner */
+.AmberLoader-banner {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background: rgb(210, 54, 11);
+	color: white;
+	text-align: center;
+	padding: 15px 0;
+	font-weight: bold;
+	font-size: 1.2rem;
+	z-index: 500;
+	cursor: pointer;
 	font-family: Arial, sans-serif;
 }
 
-.amberloader-collapsed {
-	background: var(--amber-alert-red-secondary);
-	text-align: center;
-	padding: 1rem;
-	cursor: pointer;
-	font-weight: bold;
-	font-size: 1rem;
-	width: 100%;
+/* Meta */
+.AmberLoader-noscroll {
+	overflow: hidden;
 }
 
-.amberloader-banner {
-	background: linear-gradient(50deg, var(--amber-alert-blue), var(--amber-alert-red));
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	padding: 1rem;
-	gap: 1rem;
-	width: 100%;
-}
-
-.amberloader-image {
-	height: 100px;
-	flex-shrink: 0;
-}
-
-.amberloader-textcontainer {
-	flex: 1;
-	padding-right: 3rem;
-}
-
-.amberloader-textcontainer div {
-	margin-bottom: 0.6rem;
-}
-
-.amberloader-description {
-	font-size: 1rem;
-}
-
-.amberloader-title {
-	font-weight: bold;
-	font-size: 1.4rem;
-}
-
-.amberloader-call {
-	font-weight: bold;
-	font-size: 1.1rem;
-}
-
-.amberloader-call a {
-	color: inherit;
-	text-decoration: underline;
-}
-
-.amberloader-readmore {
-	box-shadow: inset 0px 1px 0px 0px #ffffff;
-	background: linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
-	background-color: #ffffff;
-	border-radius: 4px;
-	border: 1px solid #dcdcdc;
-	display: inline-block;
-	cursor: pointer;
-	color: #000;
-	font-family: inherit;
-	font-size: 1rem;
-	padding: 7px 10px;
-	text-decoration: none;
-}
-
-.amberloader-closebtn {
-	font-size: 18px;
-	border: none;
-	background: transparent;
-	cursor: pointer;
-	margin-left: 10px;
-	color: #FFF;
-	position: absolute;
-	top: 15px;
-	right: 15px;
-}
-
-@media only screen and (max-width: 768px) {
-	.amberloader-banner {
-		flex-direction: column;
-	}
-
-	.amberloader-textcontainer div {
-		margin-bottom: 1rem;
-	}
-
-	.amberloader-image {
-		height: 150px;
-		margin: 1rem 0;
-	}
-
-	.amberloader-call {
-		font-size: 1.3rem;
-	}
-
-	.amberloader-readmore {
-		font-size: 1.2rem;
-	}
+.AmberLoader-hidden {
+	display: none;
 }
