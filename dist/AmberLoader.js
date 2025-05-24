@@ -11,10 +11,12 @@
 	// Available log levels
 	const LOG_LEVELS = { SILENT: 0, ERROR: 1, WARN: 2, INFO: 3, };
 
-	// Client vars
-	const TESTMODE = false;
+	// Settings
+	const TESTMODE = true;
 	const POLL_INTERVAL_SECONDS = 300;
-	const LOG_LEVEL = LOG_LEVELS.INFO;
+	const LOG_LEVEL = LOG_LEVELS.WARN;
+	const NOFOOTER = false;
+	const AUTOCLOSE = true;
 
 	// Constants
 	const SIZELIST = [[3120,260],[1920,1200],[1920,1080],[1080,1920],[1792,640],[1560,1440],[1440,760],[1320,720],[1312,704],[1200,800],[1152,896],[1152,768],[1150,160],[980,440],[970,250],[936,624],[800,600],[800,130],[768,864],[768,405],[768,384],[728,90],[726,482],[720,540],[720,528],[640,540],[600,500],[588,1008],[576,480],[540,960],[480,270],[432,1008],[360,252],[336,280],[335,224],[300,600]];
@@ -22,7 +24,8 @@
 	const BASEURL_TEST = "https://www.burgernet.nl/static/posters/test/";
 	const POLLURL = getSizeUrl(SIZELIST[SIZELIST.length - 1]);
 
-	// System keys
+	// System
+	const VERSION = '1.2.1';
 	const COOKIE_PREFIX = 'AmberLoader-';
 	const COOKIE_POLL_KEY = COOKIE_PREFIX + 'lastPoll';
 	const COOKIE_COLLAPSED_KEY = COOKIE_PREFIX + 'collapsed';
@@ -175,6 +178,7 @@
 			const popup = document.createElement('div');
 			popup.id = 'AmberLoader-popup';
 			popup.classList.add('AmberLoader-popup');
+			popup.ariaLabel = 'Amber Alert melding';
 
 			if (getCookie(COOKIE_COLLAPSED_KEY) == 'true')
 			{
@@ -186,12 +190,14 @@
 			const closeBtn = document.createElement('div');
 			closeBtn.className = 'AmberLoader-closeBtn';
 			closeBtn.innerHTML = '&times;';
+			closeBtn.ariaLabel = 'Sluit Amber Alert melding';
 			popup.appendChild(closeBtn);
 
 			// Link (href on image)
 			const link = document.createElement('a');
 			link.href = 'https://www.politie.nl/amberalert';
 			link.target = '_blank';
+			link.rel = "noopener noreferrer"
 			link.className = 'AmberLoader-imgLink';
 			popup.appendChild(link);
 
@@ -204,11 +210,25 @@
 			img.alt = 'Amber Alert';
 			link.appendChild(img);
 
+			// Footer
+			if (!NOFOOTER)
+			{
+				const footer = document.createElement('div');
+				footer.className = 'AmberLoader-footer';
+				if (TESTMODE)
+					footer.classList.add("AmberLoader-testmode");
+				footer.innerHTML = `AmberLoader V${VERSION} - <a href="https://github.com/jkctech/AmberLoader" target="_blank" rel="noopener noreferrer">Probleem melden</a>`;
+				popup.appendChild(footer);
+			}
+
 			// Banner
 			const banner = document.createElement('div');
 			banner.id = 'AmberLoader-banner';
 			banner.className = 'AmberLoader-banner';
 			banner.textContent = 'Amber Alert actief! (Klik om te openen)';
+			banner.role = 'dialog';
+			if (TESTMODE)
+				banner.classList.add("AmberLoader-testmode");
 
 			// Append to body
 			document.body.prepend(popup);
@@ -226,12 +246,19 @@
 			banner.addEventListener('click', () => {
 				popup.classList.remove('AmberLoader-hidden');
 				document.body.classList.add('AmberLoader-noscroll');
-				setCookie(COOKIE_COLLAPSED_KEY, false);
+				if (!AUTOCLOSE)
+					setCookie(COOKIE_COLLAPSED_KEY, false);
 				logInfo("Popup has been opened up.");
 			});
 
 			// Move body down to fit banner
 			moveBodyToY(document.getElementById("AmberLoader-banner").offsetHeight);
+
+			// Autoclose for next pageload if wanted
+			if (AUTOCLOSE)
+			{
+				setCookie(COOKIE_COLLAPSED_KEY, true);
+			}
 		}
 	}
 
@@ -243,6 +270,7 @@
 		{
 			logInfo("Cancelling...");
 			setCookie(COOKIE_ACTIVEALERT_KEY, false);
+			setCookie(COOKIE_COLLAPSED_KEY, false);
 			document.getElementById('AmberLoader-popup')?.remove();
 			document.getElementById('AmberLoader-banner')?.remove();
 			moveBodyToY(0);

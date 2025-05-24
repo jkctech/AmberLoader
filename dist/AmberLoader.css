@@ -6,7 +6,7 @@
 	width: 100vw;
 	height: 100vh;
 	background: #000;
-	z-index: 1000;
+	z-index: 2147483646;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -35,7 +35,7 @@
     text-align: center;
     border-radius: 50%;
     cursor: pointer;
-    z-index: 1010;
+    z-index: 2147483647;
     transition: background-color 0.2s ease;
 }
 
@@ -55,9 +55,28 @@
 	padding: 15px 0;
 	font-weight: bold;
 	font-size: 1.2rem;
-	z-index: 500;
+	z-index: 2147483645;
 	cursor: pointer;
 	font-family: Arial, sans-serif;
+}
+
+/* Footer */
+.AmberLoader-footer {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	text-align: center;
+	z-index: 2147483647;
+	padding: 20px 0;
+	background: rgba(0,0,0,0.3);
+	color: #ffffff;
+	font-family: Arial, sans-serif;
+	font-size: 0.8rem;
+}
+
+.AmberLoader-footer a {
+	color: #ffffff;
 }
 
 /* Meta */
@@ -67,4 +86,12 @@
 
 .AmberLoader-hidden {
 	display: none;
+}
+
+.AmberLoader-testmode {
+	background: #eb8704;
+}
+
+.AmberLoader-testmode::after {
+	content: " | TESTMODUS ACTIEF!";
 }
