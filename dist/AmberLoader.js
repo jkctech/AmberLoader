@@ -9,7 +9,7 @@
 
 (function () {
 	// Available log levels
-	const LOG_LEVELS = { SILENT: 0, ERROR: 1, WARN: 2, INFO: 3, };
+	const LOG_LEVELS = { SILENT: 0, ERROR: 1, WARN: 2, INFO: 3};
 
 	// Settings
 	const TESTMODE = true;
@@ -17,6 +17,7 @@
 	const LOG_LEVEL = LOG_LEVELS.WARN;
 	const NOFOOTER = false;
 	const AUTOCLOSE = true;
+	const HREF = true;
 
 	// Constants
 	const SIZELIST = [[3120,260],[1920,1200],[1920,1080],[1080,1920],[1792,640],[1560,1440],[1440,760],[1320,720],[1312,704],[1200,800],[1152,896],[1152,768],[1150,160],[980,440],[970,250],[936,624],[800,600],[800,130],[768,864],[768,405],[768,384],[728,90],[726,482],[720,540],[720,528],[640,540],[600,500],[588,1008],[576,480],[540,960],[480,270],[432,1008],[360,252],[336,280],[335,224],[300,600]];
@@ -193,14 +194,6 @@
 			closeBtn.ariaLabel = 'Sluit Amber Alert melding';
 			popup.appendChild(closeBtn);
 
-			// Link (href on image)
-			const link = document.createElement('a');
-			link.href = 'https://www.politie.nl/amberalert';
-			link.target = '_blank';
-			link.rel = "noopener noreferrer"
-			link.className = 'AmberLoader-imgLink';
-			popup.appendChild(link);
-
 			// Poster image
 			const img = document.createElement('img');
 			img.id = 'AmberLoader-image';
@@ -208,7 +201,22 @@
 			img.onerror = () => { logWarn("Poster attempted loading but failed, cancelling..."); cancelAlert(); };
 			img.src = getSizeUrl(getBestImage());
 			img.alt = 'Amber Alert';
-			link.appendChild(img);
+
+			// Link (href on image)
+			if (HREF)
+			{
+				const link = document.createElement('a');
+				link.href = 'https://www.politie.nl/amberalert';
+				link.target = '_blank';
+				link.rel = "noopener noreferrer"
+				link.className = 'AmberLoader-imgLink';
+				link.appendChild(img);
+				popup.appendChild(link);
+			}
+			else
+			{
+				popup.appendChild(img);
+			}
 
 			// Footer
 			if (!NOFOOTER)
