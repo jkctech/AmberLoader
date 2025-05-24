@@ -1,0 +1,41 @@
+name: Minify JS and CSS in dist/
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dist/**/*.js'
+      - 'dist/**/*.css'
+
+jobs:
+  minify:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install minifiers
+      run: |
+        npm install -g terser clean-css-cli
+
+    - name: Minify JavaScript in dist/
+      run: |
+        find dist -type f -name "*.js" ! -name "*.min.js" -exec bash -c 'terser "$0" -o "${0%.js}.min.js"' {} \;
+
+    - name: Minify CSS in dist/
+      run: |
+        find dist -type f -name "*.css" ! -name "*.min.css" -exec bash -c 'cleancss -o "${0%.css}.min.css" "$0"' {} \;
+
+    - name: Commit and push minified files
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add dist
+        git commit -m "Minified JS and CSS in dist/" || echo "No changes to commit"
+        git push
