@@ -1,32 +1,38 @@
 /*=============================== AmberLoader =================================
   Author      : JKCTech
-  Version     : 1.2.1
-  Date        : 24-05-2025
+  Version     : 1.2.2
+  Date        : 26-05-2025
   Description : Automatic client-side Amber Alert notifier
   Copyright   : Copyright © JKCTech
   GitHub      : https://github.com/jkctech/AmberLoader
 =============================================================================*/
 
 (function () {
-	// Available log levels
-	const LOG_LEVELS = { SILENT: 0, ERROR: 1, WARN: 2, INFO: 3};
+	// Get client settings
+	const SCRIPT = document.currentScript;
+	const getConfig = key => SCRIPT.hasAttribute(`data-${key}`) ? SCRIPT.getAttribute(`data-${key}`) || true : undefined;
 
 	// Settings
-	const TESTMODE = true;
-	const POLL_INTERVAL_SECONDS = 300;
-	const LOG_LEVEL = LOG_LEVELS.WARN;
-	const NOFOOTER = false;
-	const AUTOCLOSE = true;
-	const HREF = true;
+	const TESTMODE = getConfig('testmode') ?? false;
+	const HIDETEST = getConfig('hidetest') ?? false;
+	const POLL_INTERVAL_SECONDS = getConfig('interval') ?? 300;
+	const NOFOOTER = getConfig('nofooter') ?? false;
+	const AUTOCLOSE = getConfig('autoclose') ?? false;
+	const NOHREF = getConfig('nohref') ?? false;
+	const BANNERTEXT = getConfig('bannertext') ?? "Amber Alert actief! (Klik om te openen)";
+
+	// Setting logging
+	const LOGLEVELS = { SILENT: 0, ERROR: 1, WARN: 2, INFO: 3, DEBUG: 4};
+	const LOGLEVEL = LOGLEVELS[getConfig('loglevel')?.toUpperCase()] ?? LOGLEVELS.WARN;
 
 	// Constants
-	const SIZELIST = [[3120,260],[1920,1200],[1920,1080],[1080,1920],[1792,640],[1560,1440],[1440,760],[1320,720],[1312,704],[1200,800],[1152,896],[1152,768],[1150,160],[980,440],[970,250],[936,624],[800,600],[800,130],[768,864],[768,405],[768,384],[728,90],[726,482],[720,540],[720,528],[640,540],[600,500],[588,1008],[576,480],[540,960],[480,270],[432,1008],[360,252],[336,280],[335,224],[300,600]];
+	const SIZELIST = [[3120,260],[1920,1200],[1920,1080],[1080,1920],[1792,640],[1560,1440],[1440,760],[1320,720],[1312,704],[1200,800],[1152,896],[1152,768],[1150,160],[980,440],[970,250],[936,624],[800,600],[800,130],[768,864],[768,405],[768,384],[728,90],[726,482],[720,540],[720,528],[640,540],[600,500],[588,1008],[576,480],[540,960],[480,270],[432,1008]];
 	const BASEURL_PROD = "https://www.burgernet.nl/static/posters/landelijk/";
 	const BASEURL_TEST = "https://www.burgernet.nl/static/posters/test/";
 	const POLLURL = getSizeUrl(SIZELIST[SIZELIST.length - 1]);
 
 	// System
-	const VERSION = '1.2.1';
+	const VERSION = '1.2.2';
 	const COOKIE_PREFIX = 'AmberLoader-';
 	const COOKIE_POLL_KEY = COOKIE_PREFIX + 'lastPoll';
 	const COOKIE_COLLAPSED_KEY = COOKIE_PREFIX + 'collapsed';
@@ -34,10 +40,21 @@
 
 	// Loggers
 	const LOG_PREFIX = '[AmberLoader]';
-	function logInfo(...args) { if (LOG_LEVEL >= LOG_LEVELS.INFO) { console.info(LOG_PREFIX, ...args); } }
-	function logWarn(...args) { if (LOG_LEVEL >= LOG_LEVELS.WARN) { console.warn(LOG_PREFIX, ...args); } }
-	function logError(...args) { if (LOG_LEVEL >= LOG_LEVELS.ERROR) { console.error(LOG_PREFIX, ...args); } }
-	logInfo("Verbose logging is enabled!");
+	function logDebug(...args) { if (LOGLEVEL >= LOGLEVELS.DEBUG) { console.info(LOG_PREFIX, ...args); } }
+	function logInfo(...args) { if (LOGLEVEL >= LOGLEVELS.INFO) { console.info(LOG_PREFIX, ...args); } }
+	function logWarn(...args) { if (LOGLEVEL >= LOGLEVELS.WARN) { console.warn(LOG_PREFIX, ...args); } }
+	function logError(...args) { if (LOGLEVEL >= LOGLEVELS.ERROR) { console.error(LOG_PREFIX, ...args); } }
+
+	if (LOGLEVEL == LOGLEVELS.DEBUG)
+	{
+		logDebug("Debug logging is enabled!");
+		logDebug("Loaded settings:");
+		logDebug(` - testmode: ${TESTMODE}`);
+		logDebug(` - interval: ${POLL_INTERVAL_SECONDS}`);
+		logDebug(` - nofooter: ${NOFOOTER ? "true" : "false"}`);
+		logDebug(` - autoclose: ${AUTOCLOSE ? "true" : "false"}`);
+		logDebug(` - nohref: ${NOHREF ? "true" : "false"}`);
+	}
 
 	// Image selection based on screen aspect ratio
 	function getBestImage() 
@@ -82,7 +99,7 @@
 			
 		}
 
-		logInfo(`Found best image size: ${bestImage}`);
+		logDebug(`Found best image size: ${bestImage}`);
 		return bestImage;
 	}
 
@@ -126,32 +143,34 @@
 	function moveBodyToY(pixels) 
 	{
 		const children = Array.from(document.body.children);
-		logInfo(`Moving body and elements to Y ${pixels}...`);
+		logDebug(`Moving body and elements to Y ${pixels}...`);
 	
-		children.forEach(child => {
-			// Skip our own elements
-			if (child.id.includes("AmberLoader-")) 
-			{
-				return;
-			}
+		requestAnimationFrame(() => {
+			children.forEach(child => {
+				// Skip our own elements
+				if (child.id.includes("AmberLoader-")) 
+				{
+					return;
+				}
 
-			if (!child.hasAttribute('data-shifty-original')) 
-			{
-				const computedTransform = window.getComputedStyle(child).transform;
-				child.setAttribute(
-					'data-shifty-original',
-					(computedTransform && computedTransform !== 'none') ? computedTransform : ''
-				);
-			}
-	
-			const originalTransform = child.getAttribute('data-shifty-original');
-			const newTransform = combineTransformWithTranslateY(originalTransform, pixels);
-	
-			child.style.transform = newTransform;
+				if (!child.hasAttribute('data-shifty-original')) 
+				{
+					const computedTransform = window.getComputedStyle(child).transform;
+					child.setAttribute(
+						'data-shifty-original',
+						(computedTransform && computedTransform !== 'none') ? computedTransform : ''
+					);
+				}
+		
+				const originalTransform = child.getAttribute('data-shifty-original');
+				const newTransform = combineTransformWithTranslateY(originalTransform, pixels);
+		
+				child.style.transform = newTransform;
 
-			logInfo(`Moved ${child}`);
+				logDebug(`Moved ${child}`);
+			});
 		});
-		logInfo(`Body and elements have been moved!`);
+		logDebug(`Body and elements have been moved!`);
 	}
 
 	// In case the element already has a transform, combine...
@@ -173,7 +192,7 @@
 		// Double calls can happen, prevent and only build when alert is ongoing
 		if (activeAlert() && !document.getElementById('AmberLoader-popup'))
 		{
-			logInfo("Rendering poster...");
+			logDebug("Rendering poster...");
 
 			// Create popup
 			const popup = document.createElement('div');
@@ -184,7 +203,7 @@
 			if (getCookie(COOKIE_COLLAPSED_KEY) == 'true')
 			{
 				popup.classList.add('AmberLoader-hidden');
-				logInfo("Active alert but popup is collapsed.");
+				logDebug("Active alert but popup is collapsed.");
 			}
 
 			// Close button
@@ -203,7 +222,7 @@
 			img.alt = 'Amber Alert';
 
 			// Link (href on image)
-			if (HREF)
+			if (!NOHREF)
 			{
 				const link = document.createElement('a');
 				link.href = 'https://www.politie.nl/amberalert';
@@ -223,7 +242,7 @@
 			{
 				const footer = document.createElement('div');
 				footer.className = 'AmberLoader-footer';
-				if (TESTMODE)
+				if (TESTMODE && !HIDETEST)
 					footer.classList.add("AmberLoader-testmode");
 				footer.innerHTML = `AmberLoader V${VERSION} - <a href="https://github.com/jkctech/AmberLoader" target="_blank" rel="noopener noreferrer">Probleem melden</a>`;
 				popup.appendChild(footer);
@@ -233,9 +252,9 @@
 			const banner = document.createElement('div');
 			banner.id = 'AmberLoader-banner';
 			banner.className = 'AmberLoader-banner';
-			banner.textContent = 'Amber Alert actief! (Klik om te openen)';
+			banner.textContent = BANNERTEXT;
 			banner.role = 'dialog';
-			if (TESTMODE)
+			if (TESTMODE && !HIDETEST)
 				banner.classList.add("AmberLoader-testmode");
 
 			// Append to body
@@ -247,7 +266,7 @@
 				popup.classList.add('AmberLoader-hidden');
 				document.body.classList.remove('AmberLoader-noscroll');
 				setCookie(COOKIE_COLLAPSED_KEY, true);
-				logInfo("Popup has been collapsed.");
+				logDebug("Popup has been collapsed.");
 			});
 
 			// Banner onclick, opens the popup
@@ -256,7 +275,7 @@
 				document.body.classList.add('AmberLoader-noscroll');
 				if (!AUTOCLOSE)
 					setCookie(COOKIE_COLLAPSED_KEY, false);
-				logInfo("Popup has been opened up.");
+				logDebug("Popup has been opened up.");
 			});
 
 			// Move body down to fit banner
@@ -276,13 +295,13 @@
 	{
 		if (activeAlert())
 		{
-			logInfo("Cancelling...");
+			logDebug("Cancelling...");
 			setCookie(COOKIE_ACTIVEALERT_KEY, false);
 			setCookie(COOKIE_COLLAPSED_KEY, false);
 			document.getElementById('AmberLoader-popup')?.remove();
 			document.getElementById('AmberLoader-banner')?.remove();
 			moveBodyToY(0);
-			logInfo("Alert has been cancelled.");
+			logDebug("Alert has been cancelled.");
 		}
 	}
 
@@ -306,7 +325,7 @@
 			{
 				img.parentNode.removeChild(img);
 			}
-			logInfo("Temp image deleted.");
+			logDebug("Temp image deleted.");
 		};
 
 		// Image loaded, alert poster available, render...
@@ -321,14 +340,14 @@
 		img.onerror = () => {
 			cleanup();
 			setCookie(COOKIE_ACTIVEALERT_KEY, false);
-			logInfo("No active alert detected.");
+			logDebug("No active alert detected.");
 			cancelAlert();
 		};
 
 		// Load image
 		document.body.appendChild(img);
 		img.src = POLLURL;
-		logInfo("Temp image created.");
+		logDebug("Temp image created.");
 
 		updateLastPollTime();
 	}
@@ -339,7 +358,7 @@
 		const prepareAlerts = async () => {
 			if (secondsSinceLastPoll() >= POLL_INTERVAL_SECONDS) 
 			{
-				logInfo("Polling for new alerts...");
+				logDebug("Polling for new alerts...");
 				await UpdatePosters();
 			}
 			renderPoster();
@@ -355,9 +374,9 @@
 
 		// When resizing, adjust image and move body down if needed
 		window.addEventListener('resize', () => {
-			if (activeAlert) 
+			if (activeAlert && document.getElementById('AmberLoader-popup')) 
 			{
-				logInfo("Resize...");
+				logDebug("Resize...");
 
 				// Replace image to fit screen
 				document.getElementById("AmberLoader-image").src = getSizeUrl(getBestImage());
