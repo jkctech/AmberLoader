@@ -4,7 +4,7 @@
 	top: 0;
 	left: 0;
 	width: 100vw;
-	height: 100vh;
+	height: 100%;
 	background: #000;
 	z-index: 2147483646;
 	display: flex;
@@ -54,7 +54,7 @@
 	text-align: center;
 	padding: 15px 0;
 	font-weight: bold;
-	font-size: 1.2rem;
+	font-size: 1rem;
 	z-index: 2147483645;
 	cursor: pointer;
 	font-family: Arial, sans-serif;
@@ -63,16 +63,27 @@
 /* Footer */
 .AmberLoader-footer {
 	position: absolute;
+	bottom: env(safe-area-inset-bottom, 0px);
 	left: 0;
-	bottom: 0;
 	width: 100%;
 	text-align: center;
 	z-index: 2147483647;
-	padding: 20px 0;
+	padding: 20px 10px;
 	background: rgba(0,0,0,0.3);
 	color: #ffffff;
 	font-family: Arial, sans-serif;
 	font-size: 0.8rem;
+}
+
+@media only screen and (max-width: 768px) {
+	.AmberLoader-footer {
+		font-size: 0.7rem;
+		padding: 10px 5px;
+	}
+
+	.AmberLoader-banner {
+		font-size: 0.9rem;
+	}
 }
 
 .AmberLoader-footer a {
