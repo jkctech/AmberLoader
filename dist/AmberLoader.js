@@ -1,7 +1,7 @@
 /*=============================== AmberLoader =================================
   Author      : JKCTech
-  Version     : 1.2.2
-  Date        : 26-05-2025
+  Version     : 1.2.3
+  Date        : 27-05-2025
   Description : Automatic client-side Amber Alert notifier
   Copyright   : Copyright © JKCTech
   GitHub      : https://github.com/jkctech/AmberLoader
@@ -15,7 +15,7 @@
 	// Settings
 	const TESTMODE = getConfig('testmode') ?? false;
 	const HIDETEST = getConfig('hidetest') ?? false;
-	const POLL_INTERVAL_SECONDS = getConfig('interval') ?? 300;
+	const POLLDELAY = getConfig('polldelay') ?? 300;
 	const NOFOOTER = getConfig('nofooter') ?? false;
 	const AUTOCLOSE = getConfig('autoclose') ?? false;
 	const NOHREF = getConfig('nohref') ?? false;
@@ -32,9 +32,9 @@
 	const POLLURL = getSizeUrl(SIZELIST[SIZELIST.length - 1]);
 
 	// System
-	const VERSION = '1.2.2';
+	const VERSION = '1.2.3';
 	const COOKIE_PREFIX = 'AmberLoader-';
-	const COOKIE_POLL_KEY = COOKIE_PREFIX + 'lastPoll';
+	const COOKIE_POLL_KEY = COOKIE_PREFIX + 'lastpoll';
 	const COOKIE_COLLAPSED_KEY = COOKIE_PREFIX + 'collapsed';
 	const COOKIE_ACTIVEALERT_KEY = COOKIE_PREFIX + 'activealert';
 
@@ -50,7 +50,7 @@
 		logDebug("Debug logging is enabled!");
 		logDebug("Loaded settings:");
 		logDebug(` - testmode: ${TESTMODE}`);
-		logDebug(` - interval: ${POLL_INTERVAL_SECONDS}`);
+		logDebug(` - polldelay: ${POLLDELAY}`);
 		logDebug(` - nofooter: ${NOFOOTER ? "true" : "false"}`);
 		logDebug(` - autoclose: ${AUTOCLOSE ? "true" : "false"}`);
 		logDebug(` - nohref: ${NOHREF ? "true" : "false"}`);
@@ -356,7 +356,7 @@
 	{
 		// Prepare
 		const prepareAlerts = async () => {
-			if (secondsSinceLastPoll() >= POLL_INTERVAL_SECONDS) 
+			if (secondsSinceLastPoll() >= POLLDELAY) 
 			{
 				logDebug("Polling for new alerts...");
 				await UpdatePosters();
