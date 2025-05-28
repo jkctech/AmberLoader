@@ -74,7 +74,7 @@ You can control AmberLoader's behavior using `data-` attributes on the script ta
 - `loglevel`: Choose from `silent`, `error`, `warn`, `info`, or `debug`.
 - `bannertext`: Change the text used in the banner when the popup is closed.
 
-(Boolean settings are **false** by default and can be added without value to set them to **true**)
+(Boolean settings are **false** by default and can be added without value to set them to **true**. Any other set value than **false** will be interpreted as **true** by design.)
 
 ### Examples
 ```html
