@@ -1,7 +1,7 @@
 /*=============================== AmberLoader =================================
   Author      : JKCTech
-  Version     : 1.2.3
-  Date        : 27-05-2025
+  Version     : 1.2.4
+  Date        : 28-05-2025
   Description : Automatic client-side Amber Alert notifier
   Copyright   : Copyright © JKCTech
   GitHub      : https://github.com/jkctech/AmberLoader
@@ -10,20 +10,22 @@
 (function () {
 	// Get client settings
 	const SCRIPT = document.currentScript;
-	const getConfig = key => SCRIPT.hasAttribute(`data-${key}`) ? SCRIPT.getAttribute(`data-${key}`) || true : undefined;
+	const getConfigBool = key => SCRIPT.hasAttribute(`data-${key}`) ? (v => v === 'false' ? false : true)(SCRIPT.getAttribute(`data-${key}`)?.toLowerCase()) : null;
+	const getConfigString = key => SCRIPT.hasAttribute(`data-${key}`) && SCRIPT.getAttribute(`data-${key}`) !== '' ? SCRIPT.getAttribute(`data-${key}`) : null;
+	const getConfigNumber = key => SCRIPT.hasAttribute(`data-${key}`) ? (n => isNaN(n) ? null : n)(Number(SCRIPT.getAttribute(`data-${key}`))) : null;
 
 	// Settings
-	const TESTMODE = getConfig('testmode') ?? false;
-	const HIDETEST = getConfig('hidetest') ?? false;
-	const POLLDELAY = getConfig('polldelay') ?? 300;
-	const NOFOOTER = getConfig('nofooter') ?? false;
-	const AUTOCLOSE = getConfig('autoclose') ?? false;
-	const NOHREF = getConfig('nohref') ?? false;
-	const BANNERTEXT = getConfig('bannertext') ?? "Amber Alert actief! (Klik om te openen)";
+	const TESTMODE = getConfigBool('testmode') ?? false;
+	const HIDETEST = getConfigBool('hidetest') ?? false;
+	const POLLDELAY = getConfigNumber('polldelay') ?? 300;
+	const NOFOOTER = getConfigBool('nofooter') ?? false;
+	const AUTOCLOSE = getConfigBool('autoclose') ?? false;
+	const NOHREF = getConfigBool('nohref') ?? false;
+	const BANNERTEXT = getConfigString('bannertext') ?? "Amber Alert actief! (Klik om te openen)";
 
 	// Setting logging
 	const LOGLEVELS = { SILENT: 0, ERROR: 1, WARN: 2, INFO: 3, DEBUG: 4};
-	const LOGLEVEL = LOGLEVELS[getConfig('loglevel')?.toUpperCase()] ?? LOGLEVELS.WARN;
+	const LOGLEVEL = LOGLEVELS[getConfigString('loglevel')?.toUpperCase()] ?? LOGLEVELS.WARN;
 
 	// Constants
 	const SIZELIST = [[3120,260],[1920,1200],[1920,1080],[1080,1920],[1792,640],[1560,1440],[1440,760],[1320,720],[1312,704],[1200,800],[1152,896],[1152,768],[1150,160],[980,440],[970,250],[936,624],[800,600],[800,130],[768,864],[768,405],[768,384],[728,90],[726,482],[720,540],[720,528],[640,540],[600,500],[588,1008],[576,480],[540,960],[480,270],[432,1008]];
@@ -32,7 +34,7 @@
 	const POLLURL = getSizeUrl(SIZELIST[SIZELIST.length - 1]);
 
 	// System
-	const VERSION = '1.2.3';
+	const VERSION = '1.2.4';
 	const COOKIE_PREFIX = 'AmberLoader-';
 	const COOKIE_POLL_KEY = COOKIE_PREFIX + 'lastpoll';
 	const COOKIE_COLLAPSED_KEY = COOKIE_PREFIX + 'collapsed';
