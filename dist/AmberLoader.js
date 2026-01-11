@@ -1,7 +1,7 @@
 /*=============================== AmberLoader =================================
   Author      : JKCTech
-  Version     : 1.2.4
-  Date        : 28-05-2025
+  Version     : 1.3.0
+  Date        : 11-01-2026
   Description : Automatic client-side Amber Alert notifier
   Copyright   : Copyright © JKCTech
   GitHub      : https://github.com/jkctech/AmberLoader
@@ -21,6 +21,7 @@
 	const NOFOOTER = getConfigBool('nofooter') ?? false;
 	const AUTOCLOSE = getConfigBool('autoclose') ?? false;
 	const NOHREF = getConfigBool('nohref') ?? false;
+	const NLONLY = getConfigBool('nlonly') ?? false;
 	const BANNERTEXT = getConfigString('bannertext') ?? "Amber Alert actief! (Klik om te openen)";
 
 	// Setting logging
@@ -32,9 +33,10 @@
 	const BASEURL_PROD = "https://www.burgernet.nl/static/posters/landelijk/";
 	const BASEURL_TEST = "https://www.burgernet.nl/static/posters/test/";
 	const POLLURL = getSizeUrl(SIZELIST[SIZELIST.length - 1]);
+	const ISNL = getIsNL();
 
 	// System
-	const VERSION = '1.2.4';
+	const VERSION = '1.3.0';
 	const COOKIE_PREFIX = 'AmberLoader-';
 	const COOKIE_POLL_KEY = COOKIE_PREFIX + 'lastpoll';
 	const COOKIE_COLLAPSED_KEY = COOKIE_PREFIX + 'collapsed';
@@ -51,11 +53,13 @@
 	{
 		logDebug("Debug logging is enabled!");
 		logDebug("Loaded settings:");
-		logDebug(` - testmode: ${TESTMODE}`);
-		logDebug(` - polldelay: ${POLLDELAY}`);
-		logDebug(` - nofooter: ${NOFOOTER ? "true" : "false"}`);
-		logDebug(` - autoclose: ${AUTOCLOSE ? "true" : "false"}`);
-		logDebug(` - nohref: ${NOHREF ? "true" : "false"}`);
+		logDebug("- testmode:", TESTMODE);
+		logDebug("- polldelay:", POLLDELAY);
+		logDebug("- nofooter:", NOFOOTER);
+		logDebug("- autoclose:", AUTOCLOSE);
+		logDebug("- nohref:", NOHREF);
+		logDebug("- nlonly:", NLONLY);
+		logDebug(" + Is NL:", ISNL);
 	}
 
 	// Image selection based on screen aspect ratio
@@ -139,6 +143,15 @@
 	function activeAlert() 
 	{
 		return getCookie(COOKIE_ACTIVEALERT_KEY) == 'true';
+	}
+
+	function getIsNL()
+	{
+		// Specifically nl-nl, nl-* will give false positives in Dutch speaking countries
+		const isNLLocale = (navigator.language || navigator.userLanguage).toLowerCase() === "nl-nl";
+		const hasNLLocale = navigator.languages.includes("nl-NL");
+		const isNLTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone === "Europe/Amsterdam";
+		return isNLLocale || isNLTimeZone || hasNLLocale;
 	}
 
 	// Move body down to set pixels from top to fit our notification bar
@@ -356,6 +369,13 @@
 
 	function init() 
 	{
+		// If NL Only enabled and not NL, abort
+		if (NLONLY && !ISNL)
+		{
+			logDebug("NL Only enabled, user not in NL, abort.");
+			return;
+		}
+
 		// Prepare
 		const prepareAlerts = async () => {
 			if (secondsSinceLastPoll() >= POLLDELAY) 
