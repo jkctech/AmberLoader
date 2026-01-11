@@ -3,7 +3,7 @@
 AmberLoader is a highly customizable and lightweight JavaScript module that automatically checks for active **Amber Alerts in The Netherlands** and displays them as a popup on your website to gain public awareness as fast a possible.
 
 <p align="middle">
-	<img src="assets/widescreen.jpg" width="75%">
+	<img src="assets/promo.png" width="75%">
 </p>
 
 **AmberLoader is not affiliated with Amber Alert, Burgernet or the Dutch Police in any way.**
