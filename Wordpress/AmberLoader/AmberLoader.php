@@ -1,50 +1,69 @@
 <?php
 /**
- * Plugin Name: AmberLoader for Wordpress
+ * Plugin Name: AmberLoader
  * Description: Wordpress plugin for AmberLoader: an Automatic client-side Amber Alert notifier
- * Version: 1.0
+ * Version: 1.1
  * Author: JKCTech
  * Plugin URI: https://github.com/jkctech/AmberLoader
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 defined('ABSPATH') or die();
 
-// Enqueue CSS
+// Enqueue CSS and JS
 function AL_enqueue() {
 	$options = get_option('AL_options');
 	if (empty($options['enabled'])) return;
 
+	// CSS
 	wp_enqueue_style(
 		'AmberLoader-style',
-		'https://cdn.jsdelivr.net/gh/jkctech/AmberLoader@main/dist/AmberLoader.min.css'
+		plugin_dir_url(__FILE__) . 'AmberLoader.min.css',
+		array(),
+		'1.1'
 	);
+
+	// JS
+	wp_enqueue_script(
+		'AmberLoader-script',
+		plugin_dir_url(__FILE__) . 'AmberLoader.min.js',
+		array(),
+		'1.1',
+		true
+	);
+
+	// Add data-* attributes to the JS script tag
+	add_filter('script_loader_tag', function ($tag, $handle) use ($options) {
+		if ($handle !== 'AmberLoader-script') {
+			return $tag;
+		}
+
+		$attrs = [
+			'polldelay'  => $options['polldelay'] ?? 300,
+			'testmode'   => !empty($options['testmode']) ? 'true' : 'false',
+			'hidetest'   => !empty($options['hidetest']) ? 'true' : 'false',
+			'nofooter'   => !empty($options['nofooter']) ? 'true' : 'false',
+			'autoclose'  => !empty($options['autoclose']) ? 'true' : 'false',
+			'nohref'     => !empty($options['nohref']) ? 'true' : 'false',
+			'nlonly'     => !empty($options['nlonly']) ? 'true' : 'false',
+			'loglevel'   => $options['loglevel'] ?? 'warn',
+			'bannertext' => $options['bannertext'] ?? 'Amber Alert actief! (Klik om te openen)',
+		];
+
+		$data_attrs = '';
+		foreach ($attrs as $key => $value) {
+			$data_attrs .= ' data-' . esc_attr($key) . '="' . esc_attr($value) . '"';
+		}
+
+		// Inject data-* attributes right after <script
+		$tag = str_replace('<script ', '<script' . $data_attrs . ' ', $tag);
+
+		return $tag;
+	}, 10, 2);
 }
 add_action('wp_enqueue_scripts', 'AL_enqueue');
 
-// Output script with data attributes
-function AL_output_custom_script_tag() {
-	$options = get_option('AL_options');
-	if (empty($options['enabled'])) return;
-
-	$attrs = [
-		'polldelay'  => $options['polldelay'] ?? 300,
-		'testmode'   => !empty($options['testmode']) ? 'true' : 'false',
-		'hidetest'   => !empty($options['hidetest']) ? 'true' : 'false',
-		'nofooter'   => !empty($options['nofooter']) ? 'true' : 'false',
-		'autoclose'  => !empty($options['autoclose']) ? 'true' : 'false',
-		'nohref'     => !empty($options['nohref']) ? 'true' : 'false',
-		'nlonly'     => !empty($options['nlonly']) ? 'true' : 'false',
-		'loglevel'   => $options['loglevel'] ?? 'warn',
-		'bannertext' => $options['bannertext'] ?? 'Amber Alert actief! (Klik om te openen)',
-	];
-
-	echo '<script src="https://cdn.jsdelivr.net/gh/jkctech/AmberLoader@main/dist/AmberLoader.min.js"';
-	foreach ($attrs as $key => $value) {
-		echo ' data-' . esc_attr($key) . '="' . esc_attr($value) . '"';
-	}
-	echo '></script>';
-}
-add_action('wp_footer', 'AL_output_custom_script_tag', 99);
 
 // Settings page
 function AL_settings_menu() {
@@ -60,7 +79,7 @@ add_action('admin_menu', 'AL_settings_menu');
 
 // Settings link in plugin list
 function AL_plugin_action_links($links) {
-	$settings_link = '<a href="options-general.php?page=AmberLoader">' . __('Settings') . '</a>';
+	$settings_link = '<a href="options-general.php?page=AmberLoader">Settings</a>';
 	array_unshift($links, $settings_link);
 	return $links;
 }
@@ -114,14 +133,75 @@ function AL_settings_page() {
 	<?php
 }
 
+function AL_sanitize_options( $options ) {
+
+	$sanitized = [];
+
+	$boolean_fields = [
+		'enabled',
+		'testmode',
+		'hidetest',
+		'nofooter',
+		'autoclose',
+		'nohref',
+		'nlonly',
+	];
+
+	// Booleans
+	foreach ($boolean_fields as $field)
+	{
+		$sanitized[ $field ] = !empty($options[$field] );
+	}
+
+
+	// Banner Text
+	$sanitized['bannertext'] = '';
+	if (isset($options['bannertext']))
+	{
+		$sanitized['bannertext'] = sanitize_text_field($options['bannertext']);
+	}
+
+	// Poll delay (number, seconds)
+	$sanitized['polldelay'] = 300;
+	if (isset($options['polldelay']) ) {
+		$polldelay = absint( $options['polldelay'] );
+		$sanitized['polldelay'] = max(30, $polldelay);
+	}
+
+	// Log level
+	$allowed_loglevels = [
+		'silent',
+		'error',
+		'warn',
+		'info',
+		'debug',
+	];
+
+	$sanitized['loglevel'] = 'warn';
+	if (isset($options['loglevel']) && in_array($options['loglevel'], $allowed_loglevels, true))
+	{
+		$sanitized['loglevel'] = $options['loglevel'];
+	}
+
+	return $sanitized;
+}
+
+
 // Register settings and fields
 function AL_settings_init() {
 	$options = get_option('AL_options');
-	if ($options === false) {
+	if ($options === false)
+	{
 		add_option('AL_options', ['enabled' => 1]);
 	}
 
-	register_setting('AL_options_group', 'AL_options');
+	register_setting(
+		'AL_options_group',
+		'AL_options',
+		[
+			'sanitize_callback' => 'AL_sanitize_options',
+		]
+	);
 
 	add_settings_section('AL_main', 'Enable', null, 'AmberLoader');
 	add_settings_section('AL_section_test', 'Test Mode Settings', null, 'AmberLoader');
