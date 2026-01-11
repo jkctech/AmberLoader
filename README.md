@@ -1,6 +1,6 @@
 # AmberLoader
 
-AmberLoader is a lightweight JavaScript module that automatically checks for active **Amber Alerts in The Netherlands** and displays them as a popup on your website to gain public awareness as fast a possible.
+AmberLoader is a highly customizable and lightweight JavaScript module that automatically checks for active **Amber Alerts in The Netherlands** and displays them as a popup on your website to gain public awareness as fast a possible.
 
 <p align="middle">
 	<img src="assets/widescreen.jpg" width="75%">
@@ -62,6 +62,7 @@ You can control AmberLoader's behavior using `data-` attributes on the script ta
 | `nofooter`  | Boolean | `false`  |
 | `autoclose` | Boolean | `false`  |
 | `nohref`    | Boolean | `false`  |
+| `nlonly`    | Boolean | `false`  |
 | `loglevel`  | String  | `"warn"` |
 | `bannertext`| String  | `...` |
 
@@ -71,6 +72,7 @@ You can control AmberLoader's behavior using `data-` attributes on the script ta
 - `nofooter`: Disables the small footer with version info and GitHub link.
 - `autoclose`: Automatically collapses the alert on next pageload.
 - `nohref`: Disables linking to politie.nl.
+- `nlonly`: Checks if user is likely to be in The Netherlands. (Useful for sites with international traffic, **not 100% foolproof!**)
 - `loglevel`: Choose from `silent`, `error`, `warn`, `info`, or `debug`.
 - `bannertext`: Change the text used in the banner when the popup is closed.
 
@@ -85,13 +87,11 @@ You can control AmberLoader's behavior using `data-` attributes on the script ta
 <script src="..." data-polldelay="600" data-autoclose data-bannertext="Amber Alert"></script>
 ```
 
-## 🛠 Planned Features
+## 🛠 Possible Feature Improvements
 
 - Possibility to link to custom backend to cache Amber Alert API server side.
-- Image banner mode instead of popup and seperate alert banner.
-- More customizibility
-- Animations
 - A Wordpress plugin
+- More customizibility
 
 ## 📢 Report issues or contribute
 
