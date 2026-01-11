@@ -33,6 +33,7 @@ function AL_output_custom_script_tag() {
 		'nofooter'   => !empty($options['nofooter']) ? 'true' : 'false',
 		'autoclose'  => !empty($options['autoclose']) ? 'true' : 'false',
 		'nohref'     => !empty($options['nohref']) ? 'true' : 'false',
+		'nlonly'     => !empty($options['nlonly']) ? 'true' : 'false',
 		'loglevel'   => $options['loglevel'] ?? 'warn',
 		'bannertext' => $options['bannertext'] ?? 'Amber Alert actief! (Klik om te openen)',
 	];
@@ -210,6 +211,18 @@ function AL_settings_init() {
 		[
 			'name'        => 'nohref',
 			'description' => 'Disable the link behavior of the banner.'
+		]
+	);
+
+	add_settings_field(
+		'nlonly',
+		'Enable in The Netherlands Only',
+		'AL_render_boolean_field',
+		'AmberLoader',
+		'AL_section_behavior',
+		[
+			'name'        => 'nlonly',
+			'description' => 'Checks if user is likely to be in The Netherlands. (Useful for international traffic, not 100% foolproof)'
 		]
 	);
 
